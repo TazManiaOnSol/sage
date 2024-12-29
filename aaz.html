@@ -1,0 +1,543 @@
+<html><head><base href="/">
+  <title>Sage AI Terminal Agent</title>
+  <style>
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          font-family: 'Courier New', monospace;
+      }
+  
+      body {
+          background: #0a0a1f;
+          color: #00ff9d;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+      }
+  
+      .container {
+          width: 90%;
+          max-width: 1200px;
+          margin: 20px auto;
+          background: rgba(13, 13, 34, 0.95);
+          border: 1px solid #00ff9d;
+          border-radius: 10px;
+          padding: 20px;
+          box-shadow: 0 0 20px rgba(0, 255, 157, 0.2);
+      }
+  
+      .logo-container {
+          position: relative;
+          width: 200px;
+          height: 200px;
+          margin: 20px auto;
+      }
+  
+      .terminal {
+          background: rgba(10, 10, 31, 0.9);
+          border: 1px solid #00ff9d;
+          border-radius: 5px;
+          padding: 20px;
+          margin: 20px 0;
+          height: 400px;
+          overflow-y: auto;
+          position: relative;
+      }
+  
+      .terminal::-webkit-scrollbar {
+          width: 5px;
+      }
+  
+      .terminal::-webkit-scrollbar-track {
+          background: #0a0a1f;
+      }
+  
+      .terminal::-webkit-scrollbar-thumb {
+          background: #00ff9d;
+      }
+  
+      .input-line {
+          display: flex;
+          margin: 10px 0;
+      }
+  
+      .prompt {
+          color: #00ff9d;
+          margin-right: 10px;
+      }
+  
+      #userInput {
+          background: transparent;
+          border: none;
+          color: #00ff9d;
+          flex: 1;
+          font-size: 16px;
+          outline: none;
+      }
+  
+      .social-buttons {
+          display: flex;
+          justify-content: center;
+          gap: 20px;
+          margin: 20px 0;
+      }
+  
+      .social-button {
+          background: transparent;
+          border: 1px solid #00ff9d;
+          color: #00ff9d;
+          padding: 10px 20px;
+          border-radius: 5px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          text-decoration: none;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+      }
+  
+      .social-button:hover {
+          background: #00ff9d;
+          color: #0a0a1f;
+      }
+  
+      .news-container {
+          background: rgba(13, 13, 34, 0.95);
+          border: 1px solid #00ff9d;
+          border-radius: 5px;
+          padding: 15px;
+          margin: 20px 0;
+      }
+  
+      .news-item {
+          padding: 10px;
+          border-bottom: 1px solid rgba(0, 255, 157, 0.2);
+      }
+  
+      .sentiment-indicator {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-top: 10px;
+      }
+  
+      .sentiment-value {
+          font-size: 1.2em;
+          font-weight: bold;
+      }
+  
+      @keyframes pulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+          100% { transform: scale(1); }
+      }
+  
+      .typing {
+          animation: blink 1s infinite;
+      }
+  
+      @keyframes blink {
+          0% { opacity: 1; }
+          50% { opacity: 0; }
+          100% { opacity: 1; }
+      }
+      
+      .token-analysis {
+          margin: 20px 0;
+          padding: 15px;
+          background: rgba(13, 13, 34, 0.95);
+          border: 1px solid #00ff9d;
+          border-radius: 5px;
+      }
+  
+      .token-input {
+          display: flex;
+          gap: 10px;
+          margin-bottom: 15px;
+      }
+  
+      .token-input input {
+          flex: 1;
+          background: transparent;
+          border: 1px solid #00ff9d;
+          color: #00ff9d;
+          padding: 8px;
+          border-radius: 5px;
+      }
+  
+      .analyze-button {
+          background: transparent;
+          border: 1px solid #00ff9d;
+          color: #00ff9d;
+          padding: 8px 20px;
+          border-radius: 5px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+      }
+  
+      .analyze-button:hover {
+          background: #00ff9d;
+          color: #0a0a1f;
+      }
+  
+      .analysis-results {
+          margin-top: 15px;
+          padding: 10px;
+          border: 1px solid rgba(0, 255, 157, 0.3);
+          border-radius: 5px;
+          display: none;
+      }
+  
+      .risk-indicator {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin: 10px 0;
+      }
+  
+      .risk-level {
+          font-weight: bold;
+      }
+  
+      .analysis-detail {
+          margin: 5px 0;
+          padding: 5px;
+          border-bottom: 1px solid rgba(0, 255, 157, 0.2);
+      }
+  
+      .token-price-checker,
+      .token-price-input,
+      .price-results,
+      .price-detail,
+      .fucked-indicator {
+          display: none;
+      }
+  
+      .credits-counter {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: rgba(13, 13, 34, 0.95);
+          border: 1px solid #00ff9d;
+          padding: 10px;
+          border-radius: 5px;
+      }
+  
+      .buy-credits-button {
+          background: #00ff9d;
+          color: #0a0a1f;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 5px;
+          cursor: pointer;
+          display: none;
+          margin-top: 10px;
+      }
+  
+      .buy-credits-button:hover {
+          background: #00cc7d;
+      }
+  
+      .api-error {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: rgba(255, 0, 0, 0.2);
+          border: 1px solid #ff0000;
+          color: #ff0000;
+          padding: 10px;
+          border-radius: 5px;
+          z-index: 1000;
+      }
+  </style>
+  </head>
+  <body>
+      <div class="api-error" id="apiError" style="display: none;">
+          CoinMarketCap API limit reached. Falling back to AI estimates.
+      </div>
+      <div class="container">
+          <div class="logo-container">
+              <svg viewBox="0 0 200 200" width="200" height="200">
+                  <defs>
+                      <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" style="stop-color:#00ff9d;stop-opacity:1"/>
+                          <stop offset="100%" style="stop-color:#9d00ff;stop-opacity:1"/>
+                      </linearGradient>
+                  </defs>
+                  <circle cx="100" cy="100" r="90" fill="none" stroke="url(#grad1)" stroke-width="2">
+                      <animate attributeName="r" from="90" to="95" dur="2s" repeatCount="indefinite"/>
+                  </circle>
+                  <path d="M70,100 A30,30 0 0,1 130,100 M70,100 A30,30 0 0,0 130,100" fill="none" stroke="url(#grad1)" stroke-width="3">
+                      <animate attributeName="d" dur="3s" repeatCount="indefinite" values="M70,100 A30,30 0 0,1 130,100 M70,100 A30,30 0 0,0 130,100;
+                                  M70,90 A30,30 0 0,1 130,90 M70,110 A30,30 0 0,0 130,110;
+                                  M70,100 A30,30 0 0,1 130,100 M70,100 A30,30 0 0,0 130,100"/>
+                  </path>
+                  <text x="100" y="105" text-anchor="middle" fill="#00ff9d" font-size="14">SAGE AI</text>
+              </svg>
+          </div>
+  
+          <div class="social-buttons">
+              <a href="https://twitter.com/solana" target="_blank" class="social-button">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
+                  </svg>
+                  Twitter
+              </a>
+              <a href="https://t.me/solana" target="_blank" class="social-button">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M21.93 3.24l-3.36 17.79s-.47 1.18-1.76.61l-7.71-5.89-2.83-1.36s-.43-.31-.47-.98c-.04-.67.51-.98.51-.98l11.89-7.54c.24-.16.49.02.24.35l-9.06 8.25-.35 3.72s-.16 1.22 1.14 0l3.09-2.81 6.43 4.76s.74.39 1.26-.08l2.27-17.17c.24-.98-.35-1.49-1.29-.67z"/>
+                  </svg>
+                  Telegram
+              </a>
+          </div>
+  
+          <div class="terminal" id="terminal">
+              <div class="input-line">
+                  <span class="prompt">SAGE-AI&gt;&gt;</span>
+                  <input type="text" id="userInput" placeholder="Ask me anything about Solana..." autocomplete="off">
+              </div>
+          </div>
+  
+          <div class="token-analysis">
+              <h3>Token Analysis</h3>
+              <div class="token-input">
+                  <input type="text" id="tokenAddress" placeholder="Enter Solana token address...">
+                  <button id="analyzeButton" class="analyze-button">Analyze Token</button>
+              </div>
+              <div id="analysisResults" class="analysis-results">
+                  <div class="risk-indicator">
+                      <span>Risk Level:</span>
+                      <span id="riskLevel" class="risk-level"></span>
+                  </div>
+                  <div id="analysisDetails"></div>
+              </div>
+          </div>
+  
+          <div class="news-container">
+              <h3>Market Sentiment &amp; News</h3>
+              <div id="sentiment" class="sentiment-indicator">
+                  <span>Market Sentiment:</span>
+                  <span class="sentiment-value" id="sentimentValue">Loading...</span>
+              </div>
+              <div id="newsItems"></div>
+          </div>
+      </div>
+  
+      <div class="credits-counter">
+          <div>Credits Remaining: <span id="creditsCount">10</span></div>
+          <a href="https://www.pump.com" target="_blank" class="buy-credits-button" id="buyCreditsBtn">
+              Buy More Credits (1000 tokens)
+          </a>
+      </div>
+  
+      <script>const terminal = document.getElementById('terminal');
+  const userInput = document.getElementById('userInput');
+  const newsItems = document.getElementById('newsItems');
+  const sentimentValue = document.getElementById('sentimentValue');
+  let creditsRemaining = 10;
+  let queriesUsed = 0;
+  const creditsDisplay = document.getElementById('creditsCount');
+  const buyCreditsBtn = document.getElementById('buyCreditsBtn');
+  async function getAIResponse(prompt) {
+    if (creditsRemaining <= 0) {
+      return "You've run out of credits. Please purchase more to continue using Sage AI.";
+    }
+    try {
+      creditsRemaining--;
+      queriesUsed++;
+      creditsDisplay.textContent = creditsRemaining;
+      if (queriesUsed >= 10) {
+        buyCreditsBtn.style.display = 'block';
+      }
+      const response = await fetch('/api/ai_completion', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          prompt: `You are a Sage AI assistant. Respond to the following query about Solana: ${prompt}
+                          
+                          interface Response {
+                              answer: string;
+                              confidence: number;
+                          }
+                          {
+                              "answer": "Solana is a high-performance blockchain platform known for its fast transactions and low fees.",
+                              "confidence": 0.95
+                          }
+                          `,
+          data: prompt
+        })
+      });
+      const data = await response.json();
+      return data.answer;
+    } catch (error) {
+      creditsRemaining++;
+      creditsDisplay.textContent = creditsRemaining;
+      return "I apologize, but I'm currently unable to process your request. Please try again later.";
+    }
+  }
+  async function updateNewsAndSentiment() {
+    try {
+      const response = await fetch('/api/ai_completion', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          prompt: `Generate current market sentiment and news about Solana
+                          
+                          <typescript-interface>
+                          interface Response {
+                              sentiment: string;
+                              news: Array<{
+                                  title: string;
+                                  summary: string;
+                              }>;
+                          }
+                          </typescript-interface>
+                          <example>
+                          {
+                              "sentiment": "Bullish (75%)",
+                              "news": [
+                                  {
+                                      "title": "Solana DeFi Activity Surges",
+                                      "summary": "Recent developments show increased adoption..."
+                                  }
+                              ]
+                          }
+                          </example>
+                          `,
+          data: ""
+        })
+      });
+      const data = await response.json();
+      sentimentValue.textContent = data.sentiment;
+      newsItems.innerHTML = data.news.map(item => `
+                      <div class="news-item">
+                          <h4>${item.title}</h4>
+                          <p>${item.summary}</p>
+                      </div>
+                  `).join('');
+    } catch (error) {
+      console.error('Error updating news:', error);
+    }
+  }
+  function addToTerminal(text, isUser = false) {
+    const div = document.createElement('div');
+    div.className = 'input-line';
+    div.innerHTML = `
+                  <span class="prompt">${isUser ? 'User>>' : 'SAGE-AI>>'}</span>
+                  <span>${text}</span>
+              `;
+    terminal.insertBefore(div, userInput.parentElement);
+    terminal.scrollTop = terminal.scrollHeight;
+  }
+  userInput.addEventListener('keypress', async function (e) {
+    if (e.key === 'Enter' && this.value) {
+      const userText = this.value;
+      this.value = '';
+      addToTerminal(userText, true);
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'input-line typing';
+      typingDiv.innerHTML = '<span class="prompt">SAGE-AI>></span><span>Thinking...</span>';
+      terminal.insertBefore(typingDiv, userInput.parentElement);
+      const response = await getAIResponse(userText);
+      terminal.removeChild(typingDiv);
+      addToTerminal(response);
+    }
+  });
+  async function analyzeToken(address) {
+    try {
+      const response = await fetch('/api/ai_completion', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          prompt: `Analyze the following Solana token address for potential risks and provide detailed analysis: ${address}
+                  
+                          <typescript-interface>
+                          interface Response {
+                              riskLevel: "Low" | "Medium" | "High" | "Critical";
+                              riskScore: number;
+                              details: Array<{
+                                  category: string;
+                                  finding: string;
+                                  risk: "Low" | "Medium" | "High" | "Critical";
+                              }>;
+                          }
+                          </typescript-interface>
+                          <example>
+                          {
+                              "riskLevel": "Medium",
+                              "riskScore": 65,
+                              "details": [
+                                  {
+                                      "category": "Liquidity",
+                                      "finding": "Limited liquidity pools found",
+                                      "risk": "Medium"
+                                  }
+                              ]
+                          }
+                          </example>
+                          `,
+          data: address
+        })
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Error analyzing token:', error);
+      return null;
+    }
+  }
+  function displayAnalysisResults(results) {
+    const analysisResults = document.getElementById('analysisResults');
+    const riskLevel = document.getElementById('riskLevel');
+    const analysisDetails = document.getElementById('analysisDetails');
+    if (!results) {
+      analysisResults.style.display = 'block';
+      analysisDetails.innerHTML = '<div class="analysis-detail">Error analyzing token. Please try again.</div>';
+      return;
+    }
+    riskLevel.textContent = `${results.riskLevel} (${results.riskScore}/100)`;
+    riskLevel.style.color = {
+      'Low': '#00ff9d',
+      'Medium': '#ffff00',
+      'High': '#ff9900',
+      'Critical': '#ff0000'
+    }[results.riskLevel];
+    analysisDetails.innerHTML = results.details.map(detail => `
+                  <div class="analysis-detail">
+                      <strong>${detail.category}:</strong> ${detail.finding}
+                      <span style="color: ${{
+      'Low': '#00ff9d',
+      'Medium': '#ffff00',
+      'High': '#ff9900',
+      'Critical': '#ff0000'
+    }[detail.risk]}">(${detail.risk} Risk)</span>
+                  </div>
+              `).join('');
+    analysisResults.style.display = 'block';
+  }
+  document.getElementById('analyzeButton').addEventListener('click', async () => {
+    const tokenAddress = document.getElementById('tokenAddress').value.trim();
+    if (!tokenAddress) {
+      alert('Please enter a token address');
+      return;
+    }
+    document.getElementById('analysisResults').style.display = 'none';
+    document.getElementById('analyzeButton').textContent = 'Analyzing...';
+    const results = await analyzeToken(tokenAddress);
+    document.getElementById('analyzeButton').textContent = 'Analyze Token';
+    displayAnalysisResults(results);
+  });
+  addToTerminal("Welcome to Sage AI Terminal. How can I assist you today?");
+  updateNewsAndSentiment();
+  setInterval(updateNewsAndSentiment, 30000);</script>
+  </body></html>
